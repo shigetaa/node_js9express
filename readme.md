@@ -35,3 +35,35 @@ server start http://localhost:3000/
 ```
 Webブラウザで`http://localhost:3000/items/tomato`にアクセスしてみて **This is the page for tomato** が表示されると思います。
 
+Express.js の経路について、リクエストの受信と、そのリクエストの処理との間に処理追加することが可能です。
+ここでは、`main.js`にリクエストを受信前に、ログを出力する処理を追加してみます。
+
+```javascript
+const port = 3000;
+const express = require("express");
+const app = express();
+
+// ミドルウェアカンスト定義
+app.use((req, res, next) => {
+	// リクエストのパスをログに出力する
+	console.log(`request made to: ${req.url}`);
+	next();
+});
+
+app.get("/", (req, res) => {
+	res.send("Hello World!");
+});
+// URLパラメータを取得する経路
+app.get("/items/:vegetable", (req, res) => {
+	let veg = req.params.vegetable;
+	res.send(`This is the page for ${veg}`);
+});
+
+app.listen(port, () => {
+	console.log("server start http://localhost:%d/", port);
+});
+```
+
+HTTPメソッドと同様に、どのリクエストでも実行される `app.use` 関数を定義してログを出力しましたが、指定したURLだけ処理を実行する事もできます。
+例えば `/items/:vegetable` のURL時に処理する場合は、
+`app.use("/items/:vegetable", (req, res, next) => {})` と書けば実行できます。
