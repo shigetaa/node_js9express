@@ -133,3 +133,47 @@ curl --data "first_name=Shigeta&last_name=Akira" http://localhost:3000/
 ```bash
 { first_name: "Shigeta", last_name: "Akira" }
 ```
+
+## MVCを使う
+Express.jsはカスタムモジュールの可能性を広げ、リクエストとレスオンスのサイクルの中でデータを読み、編集し、レスポンスするコードを書けるようにしてくれます。
+成長を続けるコードベースを組織化する為、今後は**MVC**と呼ばれるアプリケーションの機能が、モデル、ビュー、コントローラーという３つの主な部分に集約されます。
+
+| 名称           | 説明                                                                                                                                                                             |
+| :------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ビュー         | アプリケーションからのデータをレンダリングしたもの。                                                                                                                             |
+| モデル         | アプリケーションとデータベースの中で、オブジェクト指向のデータを表現するクラス。                                                                                                 |
+| コントローラー | ビューとモデルを結びつけるもの。リクエストを受信した時、リクエスト本体データの処理方法や、モデル及びビューとの関係などを決定するロジックは、その大半をコントローラが実行します。 |
+
+MVCのデザインパターンに従って、コールバック関数を、その用途を示す名前の別モジュールに移しましょう。
+たとえばユーザーアカウントの作成、削除、変更に関するコールバック関数は、`controllers` フォルダの `usersController.js` というファイルに入れます。
+そしてホームページや、その他の情報を表示する経路の関数は、慣例に従って `homeController.js` にいれます。
+
+```path
+main.js
+router.js
+package.json
+public/
+ L images/
+ L js/
+ L css/
+views/
+ L index.html
+controllers/
+ L homeController.js
+models/
+```
+上記のようなファイル構成に変更します。
+
+コントローラー、モジュールを`homeController.js`と言うファイルを作成し下記の様に記述します。
+```javascript
+exports.sendReqParam = (req, res) => {
+	let veg = req.params.vegetable;
+	res.send(`This is the page for ${veg}`);
+};
+```
+そして、`main.js`の先頭に次のコードを追記して`homeController.js`ファイルをロードします。
+`const homeController = require("./controllers/homeController");`
+経路のコールバック関数群が、homeController に移したので以下の様に書き換えます
+`app.get("/items/:vegetable", homeController.sendReqParam);`
+このパスへのリクエストが来たら、`homeController.sendReqParam`関数が実行されます。
+
