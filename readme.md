@@ -77,8 +77,59 @@ HTTPメソッドと同様に、どのリクエストでも実行される `app.u
 Express.jsでは、body 属性によってリクエスト本文を簡単に取り出すことができます。
 bodyの内容を読みだす際に、着信したリクエストの本文を解析する為 `express.json` と `express.urlencoded` を `app` インスタントに追加します。
 
-下記の例では、ポストされたデータをコンソールに出力するのに、`req.body` を使っている事に注目しましょう。そのコードを `app.use` によって、着信するリクエストのうち、URLエンコードされたJSONフォーマットのリクエストを解析したいことをExpress.jsに知らせます。次に、ポストされたデータのために新しい経路を作ります。このプロセスは、post メソッドを使い、URLを指定するだけのシンプルなものです。そして最後にポストされたフォームの内容を、その `request` オブジェクトおよび `body` 属性とともに出力します。
+下記のコード`main.js`では、ポストされたデータをコンソールに出力するのに、`req.body` を使っている事に注目しましょう。そのコードを `app.use` によって、着信するリクエストのうち、URLエンコードされたJSONフォーマットのリクエストを解析したいことをExpress.jsに知らせます。次に、ポストされたデータのために新しい経路を作ります。このプロセスは、post メソッドを使い、URLを指定するだけのシンプルなものです。そして最後にポストされたフォームの内容を、その `request` オブジェクトおよび `body` 属性とともに出力します。
 
 ```javascript
+const port = 3000;
+const express = require("express");
+const app = express();
 
+// ミドルウェアカンスト定義
+app.use((req, res, next) => {
+	// リクエストのパスをログに出力する
+	console.log(`request made to: ${req.url}`);
+	next();
+});
+// URLエンコードされたデータを解析する
+app.use(
+	express.urlencoded({
+		exteeeended: false
+	})
+);
+app.use(express.json());
+
+app.get("/", (req, res) => {
+	res.send("Hello World!");
+});
+// URLパラメータを取得する経路
+app.get("/items/:vegetable", (req, res) => {
+	let veg = req.params.vegetable;
+	res.send(`This is the page for ${veg}`);
+});
+// POST
+app.post("/", (req, res) => {
+	console.log(req.body);
+	console.log(req.query);
+	res.send("POST Successful!");
+});
+
+app.listen(port, () => {
+	console.log("server start http://localhost:%d/", port);
+});
+```
+以下のコマンドを実行してみます。
+
+```bash
+node main.js
+```
+```bash
+server start http://localhost:3000/
+```
+このコードをテストする為、`http://localhost:3000/` に向けて、POST リクエストを出すためには、次の `curl` コマンドを使用します。
+```bash
+curl --data "first_name=Shigeta&last_name=Akira" http://localhost:3000/
+```
+すると次のような本文がサーバーのコンソールにロギングされます。
+```bash
+{ first_name: "Shigeta", last_name: "Akira" }
 ```

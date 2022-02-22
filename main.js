@@ -8,6 +8,13 @@ app.use((req, res, next) => {
 	console.log(`request made to: ${req.url}`);
 	next();
 });
+// URLエンコードされたデータを解析する
+app.use(
+	express.urlencoded({
+		exteeeended: false
+	})
+);
+app.use(express.json());
 
 app.get("/", (req, res) => {
 	res.send("Hello World!");
@@ -16,6 +23,12 @@ app.get("/", (req, res) => {
 app.get("/items/:vegetable", (req, res) => {
 	let veg = req.params.vegetable;
 	res.send(`This is the page for ${veg}`);
+});
+// POST
+app.post("/", (req, res) => {
+	console.log(req.body);
+	console.log(req.query);
+	res.send("POST Successful!");
 });
 
 app.listen(port, () => {
