@@ -165,6 +165,8 @@ models/
 上記のようなファイル構成に変更します。
 
 コントローラー、モジュールを`homeController.js`と言うファイルを作成し下記の様に記述します。
+ここでは、`sendReqParam`関数を定義してますが関数名はなんでもいいです。
+
 ```javascript
 exports.sendReqParam = (req, res) => {
 	let veg = req.params.vegetable;
